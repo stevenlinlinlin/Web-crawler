@@ -4,77 +4,19 @@ from pyppeteer import launch
 from pyppeteer_stealth import stealth
 import requests
 
+import csv
 import time
 from tqdm import tqdm
-area_city_url = ['https://www.foodpanda.com.tw/city/changhua-county/area/changhua-city',
-                 'https://www.foodpanda.com.tw/city/hsinchu-county/area/zhubei-city',
-                 'https://www.foodpanda.com.tw/city/kaohsiung-city/area/cijin',
-                 'https://www.foodpanda.com.tw/city/kaohsiung-city/area/fongshan',
-                 'https://www.foodpanda.com.tw/city/kaohsiung-city/area/gushan',
-                 'https://www.foodpanda.com.tw/city/kaohsiung-city/area/meinong',
-                 'https://www.foodpanda.com.tw/city/kaohsiung-city/area/qianzhen',
-                 'https://www.foodpanda.com.tw/city/kaohsiung-city/area/xiaogang',
-                 'https://www.foodpanda.com.tw/city/kaohsiung-city/area/yancheng',
-                 'https://www.foodpanda.com.tw/city/kaohsiung-city/area/zuoying',
-                 'https://www.foodpanda.com.tw/city/miaoli-county/area/miaoli-city',
-                 'https://www.foodpanda.com.tw/city/nantou-county/area/yuchi',
-                 'https://www.foodpanda.com.tw/city/nantou-county/area/yuchi-sun-moon-lake',
-                 'https://www.foodpanda.com.tw/city/nantou-county/area/zhushan',
-                 'https://www.foodpanda.com.tw/city/new-taipei-city/area/banqiao',
-                 'https://www.foodpanda.com.tw/city/new-taipei-city/area/danshui',
-                 'https://www.foodpanda.com.tw/city/new-taipei-city/area/linkou',
-                 'https://www.foodpanda.com.tw/city/new-taipei-city/area/sanxia',
-                 'https://www.foodpanda.com.tw/city/new-taipei-city/area/tucheng',
-                 'https://www.foodpanda.com.tw/city/new-taipei-city/area/wulai',
-                 'https://www.foodpanda.com.tw/city/new-taipei-city/area/xindian',
-                 'https://www.foodpanda.com.tw/city/new-taipei-city/area/xizhi',
-                 'https://www.foodpanda.com.tw/city/new-taipei-city/area/yonhe',
-                 'https://www.foodpanda.com.tw/city/new-taipei-city/area/zhonghe',
-                 'https://www.foodpanda.com.tw/city/pingtung-county/area/henchun',
-                 'https://www.foodpanda.com.tw/city/pingtung-county/area/henchun-kenting',
-                 'https://www.foodpanda.com.tw/city/pingtung-county/area/pingtung-city',
-                 'https://www.foodpanda.com.tw/city/taichung-city/area/beitun',
-                 'https://www.foodpanda.com.tw/city/taichung-city/area/dadu',
-                 'https://www.foodpanda.com.tw/city/taichung-city/area/dajia',
-                 'https://www.foodpanda.com.tw/city/taichung-city/area/dali',
-                 'https://www.foodpanda.com.tw/city/taichung-city/area/fengyuan',
-                 'https://www.foodpanda.com.tw/city/taichung-city/area/nantun',
-                 'https://www.foodpanda.com.tw/city/taichung-city/area/qingshui',
-                 'https://www.foodpanda.com.tw/city/taichung-city/area/taiping',
-                 'https://www.foodpanda.com.tw/city/taichung-city/area/west',
-                 'https://www.foodpanda.com.tw/city/taichung-city/area/xitun',
-                 'https://www.foodpanda.com.tw/city/tainan-city/area/annan',
-                 'https://www.foodpanda.com.tw/city/tainan-city/area/anping',
-                 'https://www.foodpanda.com.tw/city/tainan-city/area/east',
-                 'https://www.foodpanda.com.tw/city/tainan-city/area/north',
-                 'https://www.foodpanda.com.tw/city/tainan-city/area/south',
-                 'https://www.foodpanda.com.tw/city/tainan-city/area/west-central',
-                 'https://www.foodpanda.com.tw/city/taipei-city/area/beitou',
-                 'https://www.foodpanda.com.tw/city/taipei-city/area/daan',
-                 'https://www.foodpanda.com.tw/city/taipei-city/area/daan-east',
-                 'https://www.foodpanda.com.tw/city/taipei-city/area/datong',
-                 'https://www.foodpanda.com.tw/city/taipei-city/area/datong-dadaocheng',
-                 'https://www.foodpanda.com.tw/city/taipei-city/area/nangang',
-                 'https://www.foodpanda.com.tw/city/taipei-city/area/neihu',
-                 'https://www.foodpanda.com.tw/city/taipei-city/area/shilin',
-                 'https://www.foodpanda.com.tw/city/taipei-city/area/songshan',
-                 'https://www.foodpanda.com.tw/city/taipei-city/area/wanhua',
-                 'https://www.foodpanda.com.tw/city/taipei-city/area/wanhua-ximending',
-                 'https://www.foodpanda.com.tw/city/taipei-city/area/wenshan',
-                 'https://www.foodpanda.com.tw/city/taipei-city/area/xinyi',
-                 'https://www.foodpanda.com.tw/city/taitung-county/area/chenggong',
-                 'https://www.foodpanda.com.tw/city/taitung-county/area/donghe',
-                 'https://www.foodpanda.com.tw/city/taitung-county/area/dulan',
-                 'https://www.foodpanda.com.tw/city/taitung-county/area/taimali',
-                 'https://www.foodpanda.com.tw/city/taitung-county/area/taitung-city',
-                 'https://www.foodpanda.com.tw/city/taoyuan-city/area/longtan',
-                 'https://www.foodpanda.com.tw/city/taoyuan-city/area/zhongli',
-                 'https://www.foodpanda.com.tw/city/yilan-county/area/jiaoxi',
-                 'https://www.foodpanda.com.tw/city/yilan-county/area/luodong',
-                 'https://www.foodpanda.com.tw/city/yilan-county/area/yilan-city',
-                 'https://www.foodpanda.com.tw/city/yunlin-county/area/douliu-city']
 
+
+area_city_url = []
+with open('area_city_url.txt', 'r', newline='') as f:
+    city = f.readlines()
+    for c in city:
+        area_city_url.append(c.strip('\n'))
 urls = area_city_url[14]
+print(urls)
+
 # headers = {"user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36"}
 # ip = '31.186.239.244:8080'
 # res = requests.get('https://api.ipify.org?format=json',
@@ -129,6 +71,6 @@ async def main():
     await browser.close()
     return results
 
-area_new_restaurants = asyncio.get_event_loop().run_until_complete(main())
+#area_new_restaurants = asyncio.get_event_loop().run_until_complete(main())
 
-print(area_new_restaurants)
+#print(area_new_restaurants)
