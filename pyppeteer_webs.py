@@ -4,18 +4,12 @@ from pyppeteer import launch
 from pyppeteer_stealth import stealth
 import requests
 
-import csv
-import time
-from tqdm import tqdm
-
-
 area_city_url = []
 with open('area_city_url.txt', 'r', newline='') as f:
     city = f.readlines()
     for c in city:
         area_city_url.append(c.strip('\n'))
 urls = area_city_url[14]
-print(urls)
 
 # headers = {"user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36"}
 # ip = '31.186.239.244:8080'
@@ -51,10 +45,8 @@ async def main():
         page = await browser.newPage()
         await page.setUserAgent('Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.75 Safari/537.36')
         
-        await stealth(page=page)  # <-- Here
+        await stealth(page=page)
     
-    # results = []
-    # for i in range(1, 5):
         url = urls + f"?page={i}"
         await page.goto(url)
         await page.waitFor(i * 1000)
@@ -71,6 +63,6 @@ async def main():
     await browser.close()
     return results
 
-#area_new_restaurants = asyncio.get_event_loop().run_until_complete(main())
+area_new_restaurants = asyncio.get_event_loop().run_until_complete(main())
 
 #print(area_new_restaurants)
